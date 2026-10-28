@@ -7,14 +7,17 @@ import bookingRoutes from './routes/bookings.js';
 import userRoutes from './routes/users.js';
 
 const app = express();
-const allowedOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
-  .split(',')
-  .map(origin => origin.trim())
-  .filter(Boolean);
+const allowedOrigins = new Set([
+  'http://localhost:5173',
+  'https://hotelpro-narendra.vercel.app',
+  process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
+  process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
+  ...(process.env.CLIENT_ORIGIN || '').split(',').map(origin => origin.trim())
+].filter(Boolean));
 
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    if (!origin || allowedOrigins.has(origin)) return callback(null, true);
     return callback(new Error('This origin is not allowed to access the HotelPro API.'));
   }
 }));

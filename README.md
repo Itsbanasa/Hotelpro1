@@ -1,5 +1,9 @@
 # HotelPro
 
+[![Open the live HotelPro website](https://img.shields.io/badge/OPEN%20HOTELPRO-Live%20Website-344b3c?style=for-the-badge)](https://hotelpro-narendra.vercel.app/)
+
+**Live website:** [hotelpro-narendra.vercel.app](https://hotelpro-narendra.vercel.app/)
+
 Public room browsing and guest bookings, with an optional register/login API and a demo admin dashboard. No route requires authentication.
 
 
@@ -17,3 +21,7 @@ Public room browsing and guest bookings, with an optional register/login API and
 3. Open http://localhost:5173. The API listens at http://localhost:5000.
 
 Booking dates use hotel nights (check-out must be later than check-in); overlapping active dates for a room are rejected. This demo intentionally leaves the admin and write APIs public as requested. Add authentication and authorization before using it with real customer data.
+
+## Vercel deployment
+
+The Vite app serves its API through the serverless function in `client/api`. Configure `MONGO_URI` and a strong `JWT_SECRET` in the Vercel project’s Environment Variables for Production, Preview, and Development, then redeploy. The database cluster must allow network access from Vercel. Never commit `.env` files or database credentials.

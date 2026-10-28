@@ -1,0 +1,1 @@
+body{background:#f6f8fc;color:#17243a}.hero{background:linear-gradient(115deg,#153d73,#477fe3);min-height:280px}.room-image{height:220px;object-fit:cover}.card{border-radius:16px}.modal-backdrop-custom{position:fixed;inset:0;background:#10233c99;display:grid;place-items:center;padding:1rem;z-index:1050}.booking-modal{width:min(100%,520px);box-shadow:0 20px 60px #0003}

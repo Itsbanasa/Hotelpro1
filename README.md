@@ -2,6 +2,14 @@
 
 Public room browsing and guest bookings, with an optional register/login API and a demo admin dashboard. No route requires authentication.
 
+
+
+### Open https://github.com/Itsbanasa/Hotelpro1
+
+
+
+
+
 ## Run locally
 
 1. Start MongoDB, then in `server` run `npm install`, copy `.env.example` to `.env`, and run `npm run dev`.

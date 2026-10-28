@@ -3,6 +3,17 @@ import Room from '../models/Room.js';
 
 const router = Router();
 
+router.patch('/', async (req, res, next) => {
+  try {
+    const roomNumber = String(req.body.roomNumber || '').trim();
+    const name = String(req.body.name || '').trim();
+    if (!roomNumber || !name || name.length > 80) return res.status(400).json({ message: 'Enter a room number and a name up to 80 characters.' });
+    const room = await Room.findOneAndUpdate({ roomNumber }, { $set: { name } }, { new: true, runValidators: true });
+    if (!room) return res.status(404).json({ message: 'Room not found.' });
+    res.json(room);
+  } catch (error) { next(error); }
+});
+
 router.get('/', async (_req, res, next) => {
   try {
     const rooms = await Room.find().sort({ roomNumber: 1 }).lean();

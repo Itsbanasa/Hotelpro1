@@ -32,7 +32,9 @@ async function request(path, options = {}) {
     ...options,
     headers: { 'content-type': 'application/json', ...options.headers },
   });
-  const data = await response.json();
+  const body = await response.text();
+  let data;
+  try { data = JSON.parse(body); } catch { data = { message: body.slice(0, 300) }; }
   if (!response.ok) throw new Error(`${options.method || 'GET'} ${path} returned ${response.status}: ${data.message || 'unknown error'}`);
   return data;
 }
@@ -43,9 +45,9 @@ let added = 0;
 let alreadyPresent = 0;
 
 if (byNumber.has('204')) {
-  await request(`/api/rooms/${byNumber.get('204')._id}`, {
+  await request('/api/rooms', {
     method: 'PATCH',
-    body: JSON.stringify({ name: 'The Balcony View Double' }),
+    body: JSON.stringify({ roomNumber: '204', name: 'The Balcony View Double' }),
   });
 }
 

@@ -13,13 +13,18 @@ async function connectDatabase() {
 }
 
 export default async function handler(req, res) {
+  if (!req.url.startsWith('/api/')) req.url = `/api${req.url.startsWith('/') ? '' : '/'}${req.url}`;
+  if (req.url.split('?')[0] === '/api/health') {
+    return res.status(200).json({ status: 'ok', databaseConfigured: Boolean(process.env.MONGO_URI) });
+  }
   try {
     await connectDatabase();
-    // Vercel can pass the catch-all function path without the /api prefix.
-    if (!req.url.startsWith('/api/')) req.url = `/api${req.url.startsWith('/') ? '' : '/'}${req.url}`;
     return app(req, res);
   } catch (error) {
     console.error('HotelPro API unavailable:', error.message);
-    return res.status(503).json({ message: 'The booking service is temporarily unavailable. Check the Vercel MongoDB configuration.' });
+    const message = error.message.includes('MONGO_URI is not configured')
+      ? 'MONGO_URI is missing from the Vercel project environment variables.'
+      : 'Could not connect to MongoDB. Check the connection string, database user, and Atlas network access.';
+    return res.status(503).json({ message });
   }
 }

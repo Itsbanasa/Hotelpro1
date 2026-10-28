@@ -2,9 +2,11 @@ import { Router } from 'express';
 import mongoose from 'mongoose';
 import Room from '../models/Room.js';
 import Booking from '../models/Booking.js';
+import { optionalAuth, requireAuth } from '../middleware/auth.js';
 const router = Router();
 router.get('/getallbookings', async (_req, res, next) => { try { res.json(await Booking.find().sort({ createdAt: -1 })); } catch (e) { next(e); } });
-router.post('/bookroom', async (req, res, next) => {
+router.get('/mybookings', requireAuth, async (req, res, next) => { try { res.json(await Booking.find({ user_id: req.user.sub }).sort({ createdAt: -1 })); } catch (e) { next(e); } });
+router.post('/bookroom', optionalAuth, async (req, res, next) => {
   const session = await mongoose.startSession();
   try {
     const { room_id, fromdate, todate, name } = req.body;
@@ -17,7 +19,7 @@ router.post('/bookroom', async (req, res, next) => {
       if (!room) throw Object.assign(new Error('Room not found.'), { status: 404 });
       const overlaps = room.currentBookings.some(b => b.status === 'active' && new Date(b.fromdate) < end && new Date(b.todate) > start);
       if (overlaps || room.count < 1) throw Object.assign(new Error('This room is unavailable for those dates.'), { status: 409 });
-      [booking] = await Booking.create([{ room_id: String(room._id), user_id: req.body.user_id || 'Guest', fromdate: start, todate: end, totaldays, totalAmount: totaldays * room.rent, name: name.trim() }], { session });
+      [booking] = await Booking.create([{ room_id: String(room._id), user_id: req.user?.sub || 'Guest', fromdate: start, todate: end, totaldays, totalAmount: totaldays * room.rent, name: name.trim() }], { session });
       room.currentBookings.push({ bookingId: booking._id, fromdate: start, todate: end, status: 'active' });
       await room.save({ session });
     });

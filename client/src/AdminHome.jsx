@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import api from './api.js';
 
 const money = value => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value || 0);
@@ -9,8 +9,8 @@ export default function AdminHome() {
   const [tab, setTab] = useState('Bookings');
   const [rooms, setRooms] = useState([]); const [bookings, setBookings] = useState([]); const [users, setUsers] = useState([]);
   const [notice, setNotice] = useState(''); const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [form, setForm] = useState(blank);
-  async function refresh() { setLoading(true); try { const [r,b,u] = await Promise.all([api.get('/api/rooms'), api.get('/api/bookings/getallbookings'), api.get('/api/users/getallusers')]); setRooms(r.data); setBookings(b.data); setUsers(u.data); setNotice(''); } catch { setNotice('The management data could not be loaded. Check that the API is online, then retry.'); } finally { setLoading(false); } }
-  useEffect(() => { refresh(); }, []);
+  const refresh = useCallback(async () => { setLoading(true); try { const [r,b,u] = await Promise.all([api.get('/api/rooms'), api.get('/api/bookings/getallbookings'), api.get('/api/users/getallusers')]); setRooms(r.data); setBookings(b.data); setUsers(u.data); setNotice(''); } catch (error) { setNotice(error.response?.data?.message || 'The management data could not be loaded. Check that the API is online, then retry.'); } finally { setLoading(false); } }, []);
+  useEffect(() => { refresh(); }, [refresh]);
   async function addRoom(event) { event.preventDefault(); setSaving(true); setNotice(''); try { await api.post('/api/rooms/addroom', { ...form, rent: Number(form.rent), count: Number(form.count) }); setNotice('Your new room is live on the guest site.'); setForm(blank); setTab('Rooms'); await refresh(); } catch (error) { setNotice(error.response?.data?.message || 'Could not add this room. Please check the details and retry.'); } finally { setSaving(false); } }
   const tabs = ['Bookings', 'Rooms', 'Add a room', 'Guests'];
   return <main className="admin-page"><div className="container"><div className="admin-heading"><div><span className="eyebrow">HOTELPRO · PROPERTY MANAGEMENT</span><h1>Good afternoon.</h1></div><p>Keep an eye on your rooms and upcoming stays.</p></div>

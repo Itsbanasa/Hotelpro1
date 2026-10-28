@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import api from './api.js';
 import { useAuth } from './AuthContext.jsx';
 
@@ -21,13 +21,13 @@ export default function UserHome() {
   const [bookings, setBookings] = useState(() => { try { return JSON.parse(localStorage.getItem(user ? 'hotelproAccountBookings' : 'hotelproBookings') || '[]'); } catch { return []; } });
   const [cancelling, setCancelling] = useState('');
 
-  async function loadRooms() {
+  const loadRooms = useCallback(async () => {
     setLoading(true);
     try { const { data } = await api.get('/api/rooms'); setRooms(data); setNotice(''); }
-    catch { setNotice('We couldn’t reach the booking service. Please try again in a moment.'); }
+    catch (error) { setNotice(error.response?.data?.message || 'We couldn’t reach the booking service. Please try again in a moment.'); }
     finally { setLoading(false); }
-  }
-  useEffect(() => { loadRooms(); }, []);
+  }, []);
+  useEffect(() => { loadRooms(); }, [loadRooms]);
   useEffect(() => {
     if (!user) { try { setBookings(JSON.parse(localStorage.getItem('hotelproBookings') || '[]')); } catch { setBookings([]); } return; }
     api.get('/api/bookings/mybookings').then(({ data }) => { setBookings(data); localStorage.setItem('hotelproAccountBookings', JSON.stringify(data)); }).catch(() => {});

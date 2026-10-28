@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import app from '../../server/app.js';
+import app from './_lib/app.js';
 
 let connectionPromise;
 async function connectDatabase() {

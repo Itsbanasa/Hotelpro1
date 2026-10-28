@@ -23,6 +23,10 @@ Public room browsing and guest bookings, with an optional register/login API and
 
 Booking dates use hotel nights (check-out must be later than check-in); overlapping active dates for a room are rejected. Guest booking is always available without an account. The demo management dashboard and room-write endpoints remain public; add role-based authorization before using them with real customer data.
 
+## Demo rooms and photography
+
+The included demo room listings are illustrative examples, with sample availability and INR nightly rates. Their room photographs are hosted on Unsplash and used under the [Unsplash License](https://unsplash.com/license). Sample room data can be added to an explicitly selected HotelPro API with `HOTELPRO_API_URL=https://hotelpro-narendra.vercel.app node scripts/seed-sample-rooms.mjs`; the script skips room numbers already present.
+
 ## Vercel deployment
 
 The Vite app serves its API through the serverless function in `client/api`. Set `MONGO_URI` and a strong `JWT_SECRET` in the Vercel project's Environment Variables, then redeploy. The Atlas database user must have `readWrite` access to the `hotelpro` database, and the cluster's IP access list must include the deployment's egress addresses. The API health endpoint connects to MongoDB before reporting healthy. Never commit `.env` files or database credentials.

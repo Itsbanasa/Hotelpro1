@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 const roomSchema = new mongoose.Schema({
   roomNumber: { type: String, required: true, unique: true, trim: true },
+  name: { type: String, default: '' },
   description: { type: String, default: '' }, photos: [{ type: String }],
   type: { type: String, enum: ['single', 'double', 'suite'], required: true },
   rent: { type: Number, required: true, min: 0 }, count: { type: Number, default: 1, min: 0 },
